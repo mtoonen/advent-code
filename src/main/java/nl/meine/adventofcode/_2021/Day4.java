@@ -1,4 +1,4 @@
-package nl.meine.advent.dayone;
+package nl.meine.adventofcode._2021;
 
 import org.apache.commons.io.IOUtils;
 

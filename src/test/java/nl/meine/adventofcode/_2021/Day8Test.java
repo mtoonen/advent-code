@@ -1,4 +1,4 @@
-package nl.meine.advent.dayone;
+package nl.meine.adventofcode._2021;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,13 +7,11 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
-import static nl.meine.advent.dayone.Day8.sort;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -66,10 +64,10 @@ class Day8Test {
     void compute1478() {
         Map<Integer, String> results = new HashMap<>();
         instance.compute1478(results, s);
-        assertEquals(sort("ab"),results.get(1));
-        assertEquals(sort("eafb"),results.get(4));
-        assertEquals(sort("dab"),results.get(7));
-        assertEquals(sort("acedgfb"),results.get(8));
+        assertEquals(Day8.sort("ab"),results.get(1));
+        assertEquals(Day8.sort("eafb"),results.get(4));
+        assertEquals(Day8.sort("dab"),results.get(7));
+        assertEquals(Day8.sort("acedgfb"),results.get(8));
     }
 
     @Test
@@ -77,7 +75,7 @@ class Day8Test {
         Map<Integer, String> results = new HashMap<>();
         instance.compute1478(results, s);
         instance.compute3(results, s);
-        assertEquals(sort("fbcad"),results.get(3));
+        assertEquals(Day8.sort("fbcad"),results.get(3));
     }
 
     @Test
@@ -86,7 +84,7 @@ class Day8Test {
         instance.compute1478(results, s);
         instance.compute3(results, s);
         instance.compute6(results, s);
-        assertEquals(sort("cdfgeb"),results.get(6));
+        assertEquals(Day8.sort("cdfgeb"),results.get(6));
     }
 
     @Test
@@ -96,7 +94,7 @@ class Day8Test {
         instance.compute3(results, s);
         instance.compute6(results, s);
         instance.compute5(results, s);
-        assertEquals(sort("cdfeb"),results.get(5));
+        assertEquals(Day8.sort("cdfeb"),results.get(5));
     }
     @Test
     void compute9() {
@@ -106,7 +104,7 @@ class Day8Test {
         instance.compute6(results, s);
         instance.compute5(results, s);
         instance.compute9(results, s);
-        assertEquals(sort("abcdef"),results.get(9));
+        assertEquals(Day8.sort("abcdef"),results.get(9));
     }
 
     @Test
@@ -118,7 +116,7 @@ class Day8Test {
         instance.compute5(results, s);
         instance.compute9(results, s);
         instance.deduce0(results, s);
-        assertEquals(sort("abcdeg"),results.get(0));
+        assertEquals(Day8.sort("abcdeg"),results.get(0));
     }
 
     @Test
@@ -130,7 +128,7 @@ class Day8Test {
         instance.compute5(results, s);
         instance.deduce0(results, s);
         instance.deduce2(results, s);
-        assertEquals(sort("gcdfa"),results.get(2));
+        assertEquals(Day8.sort("gcdfa"),results.get(2));
     }
 
     @Test
