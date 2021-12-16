@@ -40,7 +40,7 @@ public class Day15 {
             int cost = m.maze[p.row][p.col];
             total += cost;
         }
-        return m.mazeCounted[0][0] - m.maze[0][0];
+        return total;// m.mazeCounted[0][0] - m.maze[0][0];
     }
 
     public List<Pos> traverseAtLowestCost(Maze m) {
@@ -196,8 +196,6 @@ public class Day15 {
         InputStream is = Day14.class.getClassLoader().getResourceAsStream("inputday15.txt");
         List<String> linesString = IOUtils.readLines(is, StandardCharsets.UTF_8);
 
-
-        String template = "CNBPHFBOPCSPKOFNHVKV";
         System.out.println("Numbers larger: " + d.two(linesString));
 
     }
