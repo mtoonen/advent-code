@@ -1,7 +1,5 @@
 package nl.meine.aoc._2023
 
-import java.util.HashMap
-
 class DayX {
 
     fun one(input: String): Int {
@@ -18,10 +16,9 @@ class DayX {
 }
 
 fun main() {
+    val inputReal =
+        """sdaf"""
     val ins = DayX();
     println(ins.one(inputReal))
 
 }
-
-val inputReal =
-    """sdaf"""

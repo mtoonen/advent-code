@@ -1,6 +1,6 @@
 package nl.meine.aoc._2023
 
-class Day5 {
+class Day5_2 {
 
     fun one(
         seeds: String,
@@ -39,13 +39,13 @@ class Day5 {
 
     fun getLocation(
         seed: Long,
-        seed2soilMap: Intervals,
-        soil2fertilizerMap: Intervals,
-        fertilizer2waterMap: Intervals,
-        water2lightMap: Intervals,
-        light2tempMap: Intervals,
-        temp2humidMap: Intervals,
-        humidity2locMap: Intervals,
+        seed2soilMap: Intervals2,
+        soil2fertilizerMap: Intervals2,
+        fertilizer2waterMap: Intervals2,
+        water2lightMap: Intervals2,
+        light2tempMap: Intervals2,
+        temp2humidMap: Intervals2,
+        humidity2locMap: Intervals2,
     ): Long {
         val soil = getAnswer(seed2soilMap, seed)
         val fert = getAnswer(soil2fertilizerMap, soil)
@@ -58,23 +58,23 @@ class Day5 {
         return loc
     }
 
-    fun parseString(input: String): Intervals {
+    fun parseString(input: String): Intervals2 {
         val ints = input.split("\n")
             .map { parseLine(it) }
 
-        return Intervals(ints)
+        return Intervals2(ints)
     }
 
-    fun parseLine(line: String): Interval {
+    fun parseLine(line: String): Interval2 {
         val tokens = line.split(" ")
         val destStart = tokens[0].toLong()
         val sourceStart = tokens[1].toLong()
         val length = tokens[2].toLong()
 
-        return Interval(sourceStart, length, destStart)
+        return Interval2(sourceStart, length, destStart)
     }
 
-    fun getAnswer(intervals: Intervals, start: Long): Long {
+    fun getAnswer(intervals: Intervals2, start: Long): Long {
         return intervals.contains(start)
     }
 
@@ -88,7 +88,6 @@ class Day5 {
         temp2humid: String,
         humidity2loc: String
     ): Long {
-        val seedMap = parseSeeds(seeds)
         val seed2soilMap = parseString(seed2soil)
         val soil2fertilizerMap = parseString(soil2fertilizer)
         val fertilizer2waterMap = parseString(fertilizer2water)
@@ -97,30 +96,46 @@ class Day5 {
         val temp2humidMap = parseString(temp2humid)
         val humidity2locMap = parseString(humidity2loc)
 
-      //  val seedss = seeds.split(" ").first().substringAfter(" ").split(" ").map { it.toLong() }.chunked(2).map { it.first()..<it.first() + it.last() }
+        //  val seedss = seeds.split(" ").first().substringAfter(" ").split(" ").map { it.toLong() }.chunked(2).map { it.first()..<it.first() + it.last() }
 
-        val locs =humidity2locMap.getValuesList()
-        var lowest:Long=99999
-        for(loc in locs){
-
-            val humid = humidity2locMap.containsReverse(loc)
-
-            val temp =temp2humidMap.containsReverse(humid)
-            val light = light2tempMap.containsReverse(temp)
-            val water = water2lightMap.containsReverse(light)
-            val fertilizer =  fertilizer2waterMap.containsReverse(water)
-            val soil = soil2fertilizerMap.containsReverse(fertilizer)
-            val seed = seed2soilMap.containsReverse(soil)
-            val containsSeed =containsSeed(seed,seedMap)
-            if(containsSeed){
-                lowest=loc
-                break
+        val lines = parseSeeds(seeds)
+            .map {
+                sequence {
+                    // yielding an iterable
+                    yieldAll(it.first..it.second)
+                }
             }
-        }
-        //humidity2locMap.map
-        return lowest
+            .take(1)
+            .flatMap { it.toSet() }
+            .map {
+                getLocation(
+                    it,
+                    seed2soilMap,
+                    soil2fertilizerMap,
+                    fertilizer2waterMap,
+                    water2lightMap,
+                    light2tempMap,
+                    temp2humidMap,
+                    humidity2locMap
+                )
+            }
+            .min()
+        return lines
     }
 
+
+    fun parseSeeds(input: String): MutableList<Pair<Long, Long>> {
+        val seeds = input.split(" ")
+        val pairs: MutableList<Pair<Long, Long>> = mutableListOf()
+        for (i in 0..<seeds.size step 2) {
+            val start = seeds[i].toLong()
+            val length = seeds[i + 1].toLong()
+            pairs += Pair(start, start + length)
+        }
+        return pairs
+    }
+
+}
     fun containsSeed(seed:Long, seeds:MutableList<Pair<Long, Long>>):Boolean{
 
         for(range in seeds){
@@ -143,7 +158,6 @@ class Day5 {
         return pairs
     }
 
-}
 //20358600
 //20358600
 
@@ -373,7 +387,7 @@ fun main() {
 3124768961 3581093381 213781997
 511735481 1481246364 58101507
 2624588397 1382165537 99080827"""
-    val ins = Day5();
+    val ins = Day5_2();
     println(
         ins.two(
             seeds,
@@ -388,26 +402,7 @@ fun main() {
     )
 
 }
-
-class Intervals(val intervals: List<Interval>) {
-
-    fun getValuesList():List<Long>{
-        return intervals.map { it.getValuesList() }
-            .flatten()
-            .toSet()
-            .sorted()
-
-           // .map { it.toList() }
-
-    }
-
-    fun containsReverse(point:Long):Long{
-        return intervals
-            .filter { it.containsPointReverse(point) }
-            .map { it.containsReverse(point) }
-            .firstOrNull() ?: point
-
-    }
+class Intervals2(private val intervals: List<Interval2>) {
 
     fun contains(point: Long): Long {
         return intervals
@@ -417,24 +412,11 @@ class Intervals(val intervals: List<Interval>) {
     }
 }
 
-class Interval(val startKey: Long, val end: Long, val startValue: Long) {
-
-    fun getValuesList():Set<Long>{
-        return (0..(startValue+end)).toSet()
-    }
-
-    fun containsReverse(point: Long): Long {
-        return if (point >= startValue && point <= end + startValue) {
-            val a =startKey+(point - startValue)
-            a
-        } else {
-            point
-        }
-    }
+class Interval2(private val startKey: Long, private val end: Long, private val startValue: Long) {
 
     fun contains(point: Long): Long {
         return if (point >= startKey && point <= end + startKey) {
-            startKey + (point - startKey)
+            startValue + (point - startKey)
         } else {
             point
         }
@@ -442,8 +424,5 @@ class Interval(val startKey: Long, val end: Long, val startValue: Long) {
 
     fun containsPoint(point: Long): Boolean {
         return point >= startKey && point <= end + startKey
-    }
-    fun containsPointReverse(point: Long): Boolean {
-        return point >= startValue && point <= end + startValue
     }
 }

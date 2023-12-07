@@ -1,7 +1,7 @@
 package nl.meine.aoc._2023
 
-import java.util.Arrays
-import java.util.HashMap
+import kotlin.math.max
+import kotlin.math.min
 
 class Day3 {
 
@@ -98,80 +98,135 @@ class Day3 {
             .any()
     }
 
-    fun hasSymbolNeighbour2(startCol: Int, row: Int, matrix: Array<CharArray>): Boolean {
-        val neighbours: MutableList<Char> = mutableListOf()
-        //boven
-        if (row > 0) {
-            if (startCol > 0) {
-                neighbours += matrix[row - 1][startCol - 1]
-            }
-                neighbours += matrix[row - 1][startCol]
-
-
-            if (startCol <= matrix.size - 1) {
-                neighbours += matrix[row - 1][startCol+1]
+    fun findGear(line: CharArray, row: Int, matrix: Array<CharArray>): Long {
+        var nums: Long = 0
+        line.forEachIndexed { col, char ->
+            if (char == '*') {
+                val chunkNum = getAdjacentNumbers(matrix, row, col)
+                nums += if (chunkNum.size == 2) chunkNum[0] * chunkNum[1] else 0
             }
         }
+        return nums
+    }
 
-        //links
-        if (startCol > 0) {
-            neighbours += matrix[row][startCol - 1]
+    fun getAdjacentNumbers(matrix: Array<CharArray>, row: Int, col: Int): List<Long> {
+        val numbers = emptyList<Long>().toMutableList()
+        val maxLength = matrix[row].size - 1
+        val left = col - 1
+        val right = col + 1
+        // boven
+        val above = row - 1
+        if (above >= 0) {
+            val nums = getNumbers(matrix, above, max(0, col - 3), min(maxLength, col + 3), col)
+            numbers += nums
         }
 
+        // links
+        if (left >= 0 && matrix[row][left].isDigit()) {
+            numbers += getNumber(matrix, row, max(left - 2, 0), left)
+        }
         // rechts
 
-        if (startCol <= matrix.size - 1) {
-            neighbours += matrix[row][startCol+1]
+        if (right < matrix[row].size && matrix[row][right].isDigit()) {
+            numbers += getNumber(matrix, row, right, min(maxLength, col + 3))
+        }
+        // onder
+
+        val under = row + 1
+        if (under < matrix.size) {
+            val nums = getNumbers(matrix, under, max(0, col - 3), min(maxLength, col + 3), col)
+            numbers += nums
+        }
+        return numbers
+    }
+
+    fun getNumber(matrix: Array<CharArray>, row: Int, from: Int, to: Int): Long {
+        val line = matrix[row]
+        var digits = ""
+        // walk left
+        for (index in from..to) {
+            if (index >= 0 && index <= matrix[row].size) {
+                if (line[index].isDigit()) {
+                    digits += line[index]
+                }
+            }
+        }
+        // walk right
+        return digits.toLong()
+
+    }
+
+    fun getNumbers(matrix: Array<CharArray>, row: Int, from: Int, to: Int, gearAt: Int): List<Long> {
+        val line = matrix[row]
+        val digits = mutableListOf<Long>()
+        // walk left
+        var currentNumber = ""
+        for (index in from..to) {
+            if (index >= 0 && index <= matrix[row].size) {
+                val char = line[index]
+                if (char.isDigit()) {
+                    currentNumber += char
+                } else {
+                    if (currentNumber.isNotBlank()) {
+                        val num = currentNumber.toLong()
+                        val start = index - currentNumber.length-1
+
+                        if(gearAt in start..index){
+                            digits+=num
+                        }
+                        currentNumber = ""
+                    }
+
+                }
+            }
         }
 
-        //onder
+        val index =to
+        if (currentNumber.isNotBlank()) {
+            val num = currentNumber.toLong()
+            val start = index - currentNumber.length
 
-        if (row < matrix.size - 1) {
-            if (startCol > 0) {
-                neighbours += matrix[row + 1][startCol - 1]
-            }
-            neighbours += matrix[row + 1][startCol]
-
-            if (startCol <= matrix.size - 1) {
-                neighbours += matrix[row + 1][startCol+1]
+            if(gearAt in start..index){
+                digits+=num
             }
         }
+        // walk right
+        return digits
 
-
-        return neighbours.filter { !it.equals('.') }
-            .filter { it.isDigit() }
-            .count()==2
     }
 
 
-//    fun processLine2(line: CharArray, row: Int, matrix: Array<CharArray>): List<Int> {
-//        val numbers: MutableList<Int> = mutableListOf()
-//        line.forEachIndexed { col, char ->
-//            if (char == '*') {
-//                if (hasSymbolNeighbour2( col, row, matrix)) {
-//                    val a = line.slice(start..<col).joinToString("").toInt()
-//                    numbers += a
-//                }
-//            }
-//        }
-//        val endOfLine = matrix.size
-//        if (hasSymbolNeighbour2(endOfLine, row, matrix)) {
-//            val a = line.slice(start..<endOfLine).joinToString("").toInt()
-//            numbers += a
-//        }
-//
-//        return numbers
-//    }
-
-    fun two(input: String): Int {
+    fun two(input: String): Long {
         val lines = input.split("\n")
 
-        return -1
+        val matrix = lines.map { it.toCharArray() }.toTypedArray()
+
+        val numbers: MutableList<Long> = mutableListOf()
+        matrix.onEachIndexed { row, item ->
+            numbers += findGear(item, row, matrix)
+        }
+        // per regel kijk of er * in zitten
+        // per *
+        // maak een copy van de omliggen regels: getallen max lengte 3
+        // ga alle locaties af en maak van de digits hele getallen, overschrijf de locatie
+        // tel de getallen
+        // als 2, dan goed en vermenigvuldig ze
+
+        // meer dan 2 getallen
+        // ......1*1....
+        //........1......
+        // dicht bij elkaar liggende getallen
+        // ......*.....
+        //......1.1
+        return numbers.sum()
     }
 
 }
 
 //tried: 518930
+// tries two: 41106125
+//47002527
+//69527306
 fun main() {
     val inputReal =
         """............830..743.......59..955.......663..........................................367...........895....899...............826...220......
@@ -315,6 +370,6 @@ fun main() {
 ...........919*.....................................*.......234.........492..%...........300...........301........./866..........*..........
 ...............470.....440.874...116....240........299......................27......409.......................................639.136......."""
     val ins = Day3();
-    println(ins.one(inputReal))
+    println(ins.two(inputReal))
 
 }

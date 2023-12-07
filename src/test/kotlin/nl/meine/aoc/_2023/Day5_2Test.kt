@@ -4,11 +4,10 @@ import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
 
-class Day5Test {
-    private val instance= Day5()
+class Day5_2Test {
+    private val instance= Day5_2()
 
-    private val seeds1 = "79 14 55 13"
-    private val seeds = "46 1"
+    private val seeds = "79 14 55 13"
 
     private val seed2soil = """50 98 2
 52 50 48"""

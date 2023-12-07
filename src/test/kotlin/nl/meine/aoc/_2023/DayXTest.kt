@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 
 class DayXTest {
-    private val instance : DayX = DayX()
+    private val instance  = DayX()
 
     private val input1 = """"""
 
